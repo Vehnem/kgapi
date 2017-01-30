@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SPARQL extraction</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script language="javascript" type="text/javascript" src="default.js"></script>
+<!-- http://www.w3schools.com/cssref/css_colors.asp -->
+<style>
+body {
+	font-size: 20px;
+	font-family: Sans-Serif;
+	background-color: WhiteSmoke;
+}
+table {
+    border-collapse: collapse;
+}
+table, th, td {
+	border: 1px solid black;
+	background-color: White;
+}
+</style>
+</head>
+<body>
+<a style="font-size: 11px; position: absolute; top: 2px; right: 4px; width: 100px; text-align:right;" href="/swagger-ui.html">check Api</a>
+	<h2
+		style="background-color: LightSteelBlue; border-style: solid; border-color: Grey; color: Ivory;">
+		RDFConsistencyFilter - SPARQL</h2>
+		
+	<hr></hr>
+
+	<!-- QUERY -->
+	Endpoint
+	<br>
+	<input type="text" id="endpoint" value="http://dbpedia.org/sparql"
+		style="width: 49%">
+	<br>
+	<br> Limit
+	<br>
+	<input type="text" id="limit" value="10000">
+	<br>
+	<br> Query Text (Only Construct Support)
+	<br>
+	<textarea id="queryfield" style="width: 99%; resize: none;" rows="10">
+prefix dbo: <http://dbpedia.org/ontology/>
+prefix dbp: <http://dbpedia.org/property/>
+construct {?film a dbo:Film. ?film dbp:runtime ?runtime. ?film dbp:released ?released.}
+where {?film a dbo:Film. ?film dbp:runtime ?runtime. ?film dbp:released ?released.} Limit 100
+</textarea>
+	<br>
+	<button type="button" onclick="RunQuery()">Run Query</button> 
+	<br><br>
+	<button id="delete" type="button" onclick="DeleteRDF()" style="display: none;">Delete dataset</button>
+	<font id="label_datakey"></font>
+	<br><br>
+
+	<!-- FILTER -->
+	<div id="filter" style="display: none;">
+		<div id="statistics"></div>
+		<div id="filter_options">
+		<br>Options :<br>
+		<input type="checkbox" id="remove_duplicates" value="true" /> Remove duplicates <br>
+		<input type="checkbox" id="consistent" value="true" /> Consistent <br>
+		<input type="checkbox" id="isRDFUnitSelected" /> Use RDFUnit
+		<script type="text/javascript">
+			$('#isRDFUnitSelected').click(function() {
+				$("#rdfunit").toggle(this.checked);
+			});
+		</script>
+		
+		<!--  RDFUnit -->
+		<div id="rdfunit" style="display: none">
+			--Schema (empty for automatic detection)
+			<input type="text" id="rdfunit_schema" value="" style="width: 45%;"/><br>
+			--Extra CLI arguments (refer to RDFUnit help)
+			<input type="text" id="rdfunit_args" value="" style="width: 45%;"/>
+		</div>
+		</div>
+		<br>
+		<button type="button" onclick="RunFilter()">Run Filter</button>
+	</div>
+
+	<!-- DOWNLOAD -->
+	<div id="download" style="display: none;">
+		<hr></hr>
+		<label>Results Format <select id="menue_format" name="format"
+			size="1">
+				<option>N-TRIPLES</option>
+				<option>TURTLE</option>
+				<option disabled>JSON</option>
+		</select>
+		</label>
+		<button type="button" onclick="DownloadRDF()">Save</button>
+	</div>
+
+	<!-- TEST -->
+	<div style="display: block;">
+		<hr></hr>
+		<div id="test"></div>
+		<br>
+	</div>
+	
+	
+</body>
+</html>

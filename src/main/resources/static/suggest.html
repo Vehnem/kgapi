@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Solr Suggester Test</title>
+<link
+	href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css"
+	rel="stylesheet"></link>
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script>
+	$(function() {
+		var URL_PREFIX = "http://localhost:8983/solr/companies/suggest?suggest.q=";
+		var URL_SUFFIX = "&wt=json";
+
+		$("#searchBox").autocomplete({
+
+
+			source : function(request, response) {
+
+				var lang = $("#language ").val();
+				document.getElementById("texter").innerHTML = lang;
+
+				var URL = URL_PREFIX + $("#searchBox").val() + URL_SUFFIX+"&suggest.dictionary="+lang;
+				$.ajax({
+					url : URL,
+					success : function(data) {
+						va = $("#searchBox").val();
+						//document.getElementById("texter").innerHTML = Object.getOwnPropertyNames(data.suggest.DeSuggester.'#{va}');
+
+						var sugg = JSON.stringify(data.suggest[lang][va].suggestions);
+
+						var jsonData = JSON.parse(sugg);
+						//document.getElementById("texter").innerHTML = Object.getOwnPropertyNames(jsonData[va].suggestions);
+
+						response($.map(jsonData, function(value, key) {
+							return {
+								label : value.term
+							}
+						}));
+					},
+					dataType : 'jsonp',
+					jsonp : 'json.wrf'
+				});
+			},
+			minLength : 1
+		})
+	});
+var search = function() {
+	var URL_PREFIX = "http://localhost:8983/solr/companies/select?q=";
+	var URL_SUFFIX = "&wt=json";
+	var sug = $("#language ").val();
+	var va =  $("#searchBox").val();
+	
+	var lang = "";
+	
+	if(sug == "DeSuggester") {
+		lang = "nameDe:";
+	}
+	else if(sug == "EnSuggester") {
+		lang = "nameEn:";
+	}
+	else if(sug = "TypeSuggester") {
+		lang = "type:";
+	}
+	else {
+		lang = "source:";
+	}
+
+	$.ajax({
+		url : URL_PREFIX+lang+"\""+va+"\""+URL_SUFFIX,
+		success : function(data) {
+			var sugg = JSON.stringify(data.response.docs);
+			var jsonData = JSON.parse(sugg);
+			//Object.getOwnPropertyNames(Object);
+			document.getElementById("results").innerHTML = "";
+			var out = "";
+			$.map(jsonData, function(value, key) {
+			x = Object.getOwnPropertyNames(value);
+			out = "<br><table style=\"border-collapse: collapse;\">";
+			for(i = 0; i < x.length ; i++){
+				out += "<tr><td>"+x[i]+"</td><td>"+ value[x[i]] +"</td></tr>";
+			}
+			document.getElementById("results").innerHTML += out+"</table>" ;
+		});
+
+		},
+		dataType : 'jsonp',
+		jsonp : 'json.wrf'
+	});
+}
+</script>
+<style>
+table, th, td {
+    border: 1px solid black;
+}
+</style>
+</head>
+<body>
+	<div id="texter" style="display: none;"></div>
+	<div>
+		<p><h1>Suggester Search Test</h1></p>
+		<label for="searchBox">Search</label>
+		<select id="language" size="1">
+			<option value="DeSuggester">Deutsch</option>
+			<option value="EnSuggester">Englisch</option>
+			<option value="TypeSuggester">Type</option>
+			<option value="SourceSuggester">Source</option>
+			<option disabled>all</option>
+		</select>
+		<input id="searchBox" onkeydown = "if (event.keyCode == 13) document.getElementById('searchButton').click()"  ></input>
+		<button type="button" id="searchButton" onclick="search()">Go</button>
+	</div>
+	<div id="results"></div>
+</body>
+</html>
