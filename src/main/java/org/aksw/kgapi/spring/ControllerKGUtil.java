@@ -36,7 +36,7 @@ public class ControllerKGUtil {
 
 	static final String VERSION = "v1";
 	
-	static String solrUrl = "http://chushayashi.unbelievable-machine.net:10083/solr/companies";
+	static String solrUrl = "http://chushayashi.unbelievable-machine.net:10083/solr/companiesNew";
 	
 //    private static final Logger log = LoggerFactory.getLogger(Scheduler.class);
 
